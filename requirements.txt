@@ -1,0 +1,4 @@
+streamlit 
+tensorFlow
+matplotlib 
+opencv-python-headless
