@@ -1,3 +1,4 @@
+# Importing necessary libraries
 import streamlit as st
 import tensorflow as tf
 from PIL import Image, ImageOps
@@ -20,7 +21,7 @@ class CustomBatchNormalization(tf.keras.layers.BatchNormalization):
         # Add any custom configuration here
         return config
 
-import os
+# Model Loading
 @st.cache_resource
 def load_model() -> tf.keras.Model:
     """Load the cat breed classifier model"""
@@ -29,11 +30,12 @@ def load_model() -> tf.keras.Model:
     try:
         model = tf.keras.models.load_model(model_path, custom_objects=custom_objects)
         st.success("Model loaded successfully!")
+        return model
     except Exception as e:
         st.error(f"Error loading model: {e}")
-        raise e
-    return model
+        return None
 
+# Image Preprocessing
 def import_and_resize_image(image_data: bytes) -> Image:
     """Import and resize the image"""
     image = Image.open(BytesIO(image_data))
@@ -45,14 +47,19 @@ def preprocess_image(image: Image) -> np.ndarray:
     """Preprocess the image for prediction"""
     img = np.asarray(image)
     img = img / 255.0  # Normalize the image to [0, 1] range
-    img = img[np.newaxis, ...]  # Add batch dimension
+    img = img[np.newaxis,...]  # Add batch dimension
     return img
 
+# Prediction
 def make_prediction(image: np.ndarray, model: tf.keras.Model) -> np.ndarray:
     """Make a prediction using the model"""
+    if model is None:
+        st.error("Model not loaded. Please try again.")
+        return None
     prediction = model.predict(image)
     return prediction
 
+# Main Function
 def main():
     st.write("""
     # Cat Breed Classifier
@@ -62,19 +69,23 @@ def main():
     if file is None:
         st.text("Please upload an image file")
     else:
-        try:
-            # Read the image data from the UploadedFile object
-            image_data = file.read()
-            image = import_and_resize_image(image_data)
-            st.image(image, use_column_width=True)
-            preprocessed_image = preprocess_image(image)
+        with st.spinner("Loading model..."):
             model = load_model()
-            prediction = make_prediction(preprocessed_image, model)
-            class_index = np.argmax(prediction)
-            output_string = f"OUTPUT: {CLASS_NAMES[class_index]}"
-            st.success(output_string)
-        except Exception as e:
-            st.error(f"Error processing image: {e}")
+        if model is None:
+            st.error("Error loading model. Please try again.")
+        else:
+            try:
+                # Read the image data from the UploadedFile object
+                image_data = file.read()
+                image = import_and_resize_image(image_data)
+                st.image(image, use_column_width=True)
+                preprocessed_image = preprocess_image(image)
+                prediction = make_prediction(preprocessed_image, model)
+                class_index = np.argmax(prediction)
+                output_string = f"OUTPUT: {CLASS_NAMES[class_index]}"
+                st.success(output_string)
+            except Exception as e:
+                st.error(f"Error processing image: {e}")
 
 if __name__ == "__main__":
     main()
