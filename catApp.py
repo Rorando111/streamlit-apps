@@ -23,23 +23,28 @@ class CustomBatchNormalization(tf.keras.layers.BatchNormalization):
 @st.cache_resource
 def load_model() -> tf.keras.Model:
     """Load the cat breed classifier model"""
-    # Load the model from the saved format
-    model_path = 'cat_classifier.h5'
+    model_path = 'path/to/saved_cat_classifier.h5'
     custom_objects = {'CustomBatchNormalization': CustomBatchNormalization}
-    model = tf.keras.models.load_model(model_path, custom_objects=custom_objects)
+    try:
+        model = tf.keras.models.load_model(model_path, custom_objects=custom_objects)
+        st.success("Model loaded successfully!")
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        raise e
     return model
 
 def import_and_resize_image(image_data: bytes) -> Image:
     """Import and resize the image"""
-    image = Image.open(BytesIO(image_data))  # Use BytesIO to create a file-like object
-    size = IMAGE_SIZE  # Define the size variable
+    image = Image.open(BytesIO(image_data))
+    size = IMAGE_SIZE
     image = ImageOps.fit(image, size, Image.LANCZOS)
     return image
 
 def preprocess_image(image: Image) -> np.ndarray:
     """Preprocess the image for prediction"""
     img = np.asarray(image)
-    img = img[np.newaxis, ...]
+    img = img / 255.0  # Normalize the image to [0, 1] range
+    img = img[np.newaxis, ...]  # Add batch dimension
     return img
 
 def make_prediction(image: np.ndarray, model: tf.keras.Model) -> np.ndarray:
@@ -49,8 +54,8 @@ def make_prediction(image: np.ndarray, model: tf.keras.Model) -> np.ndarray:
 
 def main():
     st.write("""
-# Cat Breed Classifier
-""")
+    # Cat Breed Classifier
+    """)
     file = st.file_uploader("Choose a cat photo from your computer", type=["jpg", "png"])
 
     if file is None:
