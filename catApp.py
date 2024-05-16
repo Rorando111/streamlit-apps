@@ -1,6 +1,5 @@
 import streamlit as st
 import tensorflow as tf
-import cv2
 from PIL import Image, ImageOps
 import numpy as np
 
@@ -19,25 +18,26 @@ st.write("""
 
 file_uploader = st.file_uploader("Upload an image of a cat to classify its breed:", type=["jpg", "png"])
 
-def predict_breed(image_data: bytes, model: tf.keras.Model) -> str:
+def predict_breed(image: Image.Image, model: tf.keras.Model) -> str:
     size = (64, 64)
-    image = ImageOps.fit(Image.open(image_data), size, Image.LANCZOS)
+    image = ImageOps.fit(image, size, Image.LANCZOS)
     img = np.asarray(image)
-    img_reshape = img[np.newaxis, ...]
+    img = img / 255.0  # Normalize the image
+    img_reshape = img[np.newaxis, ...]  # Add batch dimension
     prediction = model.predict(img_reshape)
     class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
-                    'British Shorthair', 'Egyptian Mau', 'Maine Coon',
-                    'Norweigian forest', 'Persian', 'Ragdoll',
-                    'Russian Blue', 'Siamese', 'Sphynx']
+                   'British Shorthair', 'Egyptian Mau', 'Maine Coon',
+                   'Norwegian Forest', 'Persian', 'Ragdoll',
+                   'Russian Blue', 'Siamese', 'Sphynx']
     return class_names[np.argmax(prediction)]
 
-if file_uploader is None:
-    st.text("Please upload an image file")
-else:
+if file_uploader is not None:
     try:
         image = Image.open(file_uploader)
         st.image(image, use_column_width=True)
-        prediction = predict_breed(file_uploader, model)
+        prediction = predict_breed(image, model)
         st.success(f"OUTPUT: {prediction}")
     except Exception as e:
         st.error(f"Error: {e}")
+else:
+    st.text("Please upload an image file")
