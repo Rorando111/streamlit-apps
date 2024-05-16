@@ -3,6 +3,7 @@ import tensorflow as tf
 from PIL import Image, ImageOps
 import numpy as np
 from io import BytesIO
+import os
 
 # Constants
 IMAGE_SIZE = (224, 224)
@@ -17,15 +18,16 @@ class CustomBatchNormalization(tf.keras.layers.BatchNormalization):
 
     def get_config(self):
         config = super(CustomBatchNormalization, self).get_config()
-        # Add any custom configuration here
         return config
 
 @st.cache_resource
 def load_model() -> tf.keras.Model:
     """Load the cat breed classifier model"""
-    model_path = 'saved_cat_classifier.h5'
+    model_path = 'cat_classifier.h5'
     custom_objects = {'CustomBatchNormalization': CustomBatchNormalization}
     try:
+        if not os.path.isfile(model_path):
+            raise FileNotFoundError(f"The model file {model_path} does not exist.")
         model = tf.keras.models.load_model(model_path, custom_objects=custom_objects)
         st.success("Model loaded successfully!")
     except Exception as e:
@@ -56,6 +58,12 @@ def main():
     st.write("""
     # Cat Breed Classifier
     """)
+
+    # Check and display the current working directory and list files
+    st.text(f"Current working directory: {os.getcwd()}")
+    st.text("Files in the current working directory:")
+    st.text(os.listdir(os.getcwd()))
+
     file = st.file_uploader("Choose a cat photo from your computer", type=["jpg", "png"])
 
     if file is None:
