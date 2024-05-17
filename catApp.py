@@ -1,49 +1,41 @@
+%%writefile catApp.py
+
 import streamlit as st
 import tensorflow as tf
-from PIL import Image, ImageOps
 import numpy as np
+from PIL import Image
+import io
 
 # Load the model
-@st.cache(allow_output_mutation=True)
-def load_model():
-    model_path = 'cat_classifier.hdf5'
-    model = tf.keras.models.load_model(model_path)
-    return model
+model = tf.keras.models.load_model('cat_classifier.hdf5')
 
-model = load_model()
+# Define the class names
+class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
+               'British Shorthair', 'Egyptian Mau', 'Maine Coon',
+               'Norweigian forest', 'Persian', 'Ragdoll',
+               'Russian Blue', 'Siamese', 'Sphynx']
 
-# Create a Streamlit app
-st.write("""
-# Cat Breed Classifier
+st.title("Cat Breed Classifier")
+st.write("Upload an image of a cat to classify its breed:")
 
-Upload an image of a cat to predict its breed.
-""")
+uploaded_file = st.file_uploader("Choose an image file", type=["jpg", "png"])
 
-file = st.file_uploader("Choose cat photo from device", type=["jpg", "jpeg", "png"])
+if uploaded_file is not None:
+    # Read the uploaded file
+    image = Image.open(io.BytesIO(uploaded_file.getvalue()))
 
-if file is None:
-    st.text("Please upload an image file")
-else:
-    image = Image.open(file)
-    st.image(image, use_column_width=True)
+    # Display the uploaded image
+    st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    # Preprocess the image
-    img_height, img_width = 224, 224
-    image = ImageOps.fit(image, (img_height, img_width), Image.ANTIALIAS)
-    img = np.asarray(image) / 255.0
-    img_reshape = np.expand_dims(img, axis=0)
+    # Preprocess the uploaded image
+    image = tf.image.resize(np.array(image), (224, 224))
+    image = image / 255.0
 
-    # Make the prediction
-    prediction = model.predict(img_reshape)
+    # Make predictions
+    predictions = model.predict(image[None, ...])
 
-    # Get the predicted breed and probability
-    class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
-                   'British Shorthair', 'Egyptian Mau', 'Maine Coon',
-                   'Norweigian forest', 'Persian', 'Ragdoll',
-                   'Russian Blue', 'Siamese', 'Sphynx']
-    predicted_breed = class_names[np.argmax(prediction)]
-    probability = np.max(prediction)
+    # Get the top-1 prediction
+    top_prediction = np.argmax(predictions)
 
-    # Display the results
-    string = "OUTPUT : {} ({:.2f}%)".format(predicted_breed, probability * 100)
-    st.success(string)
+    # Display the result
+    st.write(f"Predicted breed: {class_names[top_prediction]}")
