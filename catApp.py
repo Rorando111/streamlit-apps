@@ -32,5 +32,5 @@ class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
                'British Shorthair', 'Egyptian Mau', 'Maine Coon',
                'Norweigian forest', 'Persian', 'Ragdoll',
                'Russian Blue', 'Siamese', 'Sphynx']
-    string="OUTPUT : "+class_names[np.argmax(prediction)]
-    st.success(string)
+string="OUTPUT : "+class_names[np.argmax(prediction)]
+st.success(string)
