@@ -41,8 +41,8 @@ else:
                    'British Shorthair', 'Egyptian Mau', 'Maine Coon',
                    'Norweigian forest', 'Persian', 'Ragdoll',
                    'Russian Blue', 'Siamese', 'Sphynx']
-    predicted_breed = class_names[np.argmax(prediction[0])]
-    probability = np.max(prediction[0])
+    predicted_breed = class_names[np.argmax(prediction)]
+    probability = np.max(prediction)
 
     # Display the results
     string = "OUTPUT : {} ({:.2f}%)".format(predicted_breed, probability * 100)
