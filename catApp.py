@@ -5,7 +5,7 @@ import numpy as np
 
 @st.cache_resource
 def load_model():
-    model_path = 'cat_classifier.h5'
+    model_path = 'cat_breed_classifier.h5'
     model = tf.keras.models.load_model(model_path)
     return model
 
