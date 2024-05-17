@@ -6,7 +6,7 @@ import numpy as np
 # Load the model
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model_path = 'cat_classifier.hdf5'
+    model_path = 'cat_classifier.h5'
     model = tf.load_model(model_path)
     return model
 
