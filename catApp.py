@@ -76,3 +76,5 @@ def main() -> None:
             st.error(f"Error reading image file: {e}")
         except ValueError as e:
             st.error(f"Error processing image: {e}")
+if __name__ == "__main__":
+    main()
