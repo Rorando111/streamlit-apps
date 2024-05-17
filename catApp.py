@@ -9,7 +9,7 @@ class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
 
 @st.cache(allow_output_mutation=True)
 def load_model():
-  model=tf.keras.models.load_model('/content/drive/MyDrive/Finals Dataset/cat_breeds_classifier.h5')
+  model=tf.keras.models.load_model('./cat_breeds_classifier.h5')
   return model
 with st.spinner('Model is being loaded..'):
   model=load_model()
