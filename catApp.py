@@ -25,7 +25,8 @@ def load_model() -> tf.keras.Model:
     """Load the cat breed classifier model"""
     # Load the model from the saved format
     model_path = 'cat_breed_classifier.h5'
-    model = tf.keras.models.load_model(model_path)
+    custom_objects = {'CustomBatchNormalization': CustomBatchNormalization}
+    model = tf.keras.models.load_model(model_path, custom_objects=custom_objects)
     return model
 
 def import_and_resize_image(image_data: bytes) -> Image:
