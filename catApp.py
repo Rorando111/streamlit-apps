@@ -24,9 +24,7 @@ if file is not None:
     image = tf.expand_dims(image, 0)
 
     prediction = model.predict(image)
-    class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay', 'British Shorthair', 
-                   'Egyptian Mau', 'Maine Coon', 'Norwegian Forest', 'Persian', 
-                   'Ragdoll', 'Russian Blue', 'Siamese', 'Sphynx']
+    class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay', 'British Shorthair','Egyptian Mau', 'Maine Coon', 'Norwegian Forest', 'Persian', 'Ragdoll', 'Russian Blue', 'Siamese', 'Sphynx']
     predicted_class = class_names[np.argmax(prediction)]
 
     st.write(f"Predicted class: {predicted_class}")
