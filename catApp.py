@@ -2,9 +2,11 @@ import streamlit as st
 import tensorflow as tf
 
 @st.cache_resource
+@st.cache_resource
 def load_model():
-  model=tf.keras.models.load_model('cat_classifier.h5')
-  return model
+    model_path = 'cat_classifier.h5'  # Update the path to the correct location
+    model = tf.keras.models.load_model(model_path)
+    return model
 model=load_model()
 st.write("""
 # Cat Breed Classifier"""
