@@ -2,4 +2,4 @@ streamlit
 tensorFlow
 matplotlib 
 opencv-python-headless
---upgrade keras.
+--upgrade keras
