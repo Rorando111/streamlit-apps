@@ -24,7 +24,7 @@ class CustomBatchNormalization(tf.keras.layers.BatchNormalization):
 def load_model() -> tf.keras.Model:
     """Load the cat breed classifier model"""
     # Load the model from the saved format
-    model_path = './cat__breed_classifier.h5'
+    model_path = './cat_breed_classifier.h5'
     model = tf.keras.models.load_model(model_path)
     return model
 
