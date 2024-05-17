@@ -23,7 +23,6 @@ class CustomBatchNormalization(tf.keras.layers.BatchNormalization):
 @st.cache_resource
 def load_model() -> tf.keras.Model:
     """Load the cat breed classifier model"""
-    # Load the model from the saved format
     model_path = 'cat_breed_classifier.h5'
     custom_objects = {'CustomBatchNormalization': CustomBatchNormalization}
     model = tf.keras.models.load_model(model_path, custom_objects=custom_objects)
@@ -31,15 +30,14 @@ def load_model() -> tf.keras.Model:
 
 def import_and_resize_image(image_data: bytes) -> Image:
     """Import and resize the image"""
-    image = Image.open(BytesIO(image_data))  # Use BytesIO to create a file-like object
-    size = IMAGE_SIZE  # Define the size variable
-    image = ImageOps.fit(image, size, Image.LANCZOS)
+    image = Image.open(BytesIO(image_data))
+    image = ImageOps.fit(image, IMAGE_SIZE, Image.LANCZOS)
     return image
 
 def preprocess_image(image: Image) -> np.ndarray:
     """Preprocess the image for prediction"""
     img = np.asarray(image)
-    img = img[np.newaxis, ...]
+    img = img[np.newaxis,...]
     return img
 
 def make_prediction(image: np.ndarray, model: tf.keras.Model) -> np.ndarray:
@@ -47,7 +45,17 @@ def make_prediction(image: np.ndarray, model: tf.keras.Model) -> np.ndarray:
     prediction = model.predict(image)
     return prediction
 
-def main():
+def display_image(image: Image) -> None:
+    """Display the image using Streamlit"""
+    st.image(image, use_column_width=True)
+
+def display_prediction(prediction: np.ndarray) -> None:
+    """Display the prediction result"""
+    class_index = np.argmax(prediction)
+    output_string = f"OUTPUT: {CLASS_NAMES[class_index]}"
+    st.success(output_string)
+
+def main() -> None:
     st.write("""
 # Cat Breed Classifier
 """)
@@ -57,18 +65,14 @@ def main():
         st.text("Please upload an image file")
     else:
         try:
-            # Read the image data from the UploadedFile object
             image_data = file.read()
             image = import_and_resize_image(image_data)
-            st.image(image, use_column_width=True)
+            display_image(image)
             preprocessed_image = preprocess_image(image)
             model = load_model()
             prediction = make_prediction(preprocessed_image, model)
-            class_index = np.argmax(prediction)
-            output_string = f"OUTPUT: {CLASS_NAMES[class_index]}"
-            st.success(output_string)
-        except Exception as e:
+            display_prediction(prediction)
+        except IOError as e:
+            st.error(f"Error reading image file: {e}")
+        except ValueError as e:
             st.error(f"Error processing image: {e}")
-
-if __name__ == "__main__":
-    main()
