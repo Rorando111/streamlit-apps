@@ -1,5 +1,4 @@
 streamlit 
-tensorFlow
-matplotlib 
+tensorFlow 
 opencv-python-headless
 
