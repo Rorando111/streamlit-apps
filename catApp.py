@@ -1,37 +1,39 @@
 import streamlit as st
 import tensorflow as tf
-
-@st.cache(allow_output_mutation=True)
-def load_model():
-  model=tf.keras.models.load_model('cat_classifier.hdf5')
-  return model
-model=load_model()
-st.write("""
-# Plant Leaf Detection System"""
-)
-
-file = st.file_uploader("Please upload cat image from device", type=["jpg", "jpeg", "png"])
-
-import cv2
-from PIL import Image,ImageOps
 import numpy as np
-def import_and_predict(image_data,model):
-    size=(224,224)
-    image=ImageOps.fit(image_data,size,Image.ANTIALIAS)
-    img=np.asarray(image)
-    img_reshape=img[np.newaxis,...]
-    prediction=model.predict(img_reshape)
-    return prediction
-if file is None:
-    st.text("Please upload an image file")
-else:
-    image=Image.open(file)
-    st.image(image,use_column_width=True)
-    prediction=import_and_predict(image,model)
-    class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
-                   'British Shorthair', 'Egyptian Mau', 'Maine Coon',
-                   'Norweigian forest', 'Persian', 'Ragdoll',
-                   'Russian Blue', 'Siamese', 'Sphynx']
+from PIL import Image
+import io
 
-    string="OUTPUT : "+class_names[np.argmax(prediction)]
-    st.success(string)
+# Load the model
+model = tf.keras.models.load_model('cat_classifier.hdf5')
+
+# Define the class names
+class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
+               'British Shorthair', 'Egyptian Mau', 'Maine Coon',
+               'Norweigian forest', 'Persian', 'Ragdoll',
+               'Russian Blue', 'Siamese', 'Sphynx']
+
+st.title("Cat Breed Classifier")
+st.write("Upload an image of a cat to classify its breed:")
+
+uploaded_file = st.file_uploader("Choose an image file", type=["jpg", "png"])
+
+if uploaded_file is not None:
+    # Read the uploaded file
+    image = Image.open(io.BytesIO(uploaded_file.getvalue()))
+
+    # Display the uploaded image
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+
+    # Preprocess the uploaded image
+    image = tf.image.resize(np.array(image), (224, 224))
+    image = image / 255.0
+
+    # Make predictions
+    predictions = model.predict(image[None, ...])
+
+    # Get the top-1 prediction
+    top_prediction = np.argmax(predictions)
+
+    # Display the result
+    st.write(f"Predicted breed: {class_names[top_prediction]}")
