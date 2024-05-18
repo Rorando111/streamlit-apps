@@ -38,8 +38,8 @@ def run():
         if st.button("Predict"):
             result = processed_img(save_image_path)
             if result == "Unknown Breed":
-                st.error("Predicted Cat breed is: " + result)
+                st.error("This is a: " + result)
             else:
-                st.success("Predicted Cat breed is: " + result)
+                st.success("This is a: " + result)
 
 run()
