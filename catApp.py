@@ -40,4 +40,4 @@ def import_and_predict(image_data, model):
     return prediction
 
 # Save the model using the `save_model` function
-tf.keras.models.save_model(model, 'cat_classifier.h5')
+tf.keras.models.save_model(model, 'model.hdf5')
