@@ -1,39 +1,29 @@
 import streamlit as st
 import tensorflow as tf
-import numpy as np
 from PIL import Image
-import io
 
 # Load the model
 model = tf.keras.models.load_model('cat_classifier.hdf5')
 
-# Define the class names
-class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
-               'British Shorthair', 'Egyptian Mau', 'Maine Coon',
-               'Norweigian forest', 'Persian', 'Ragdoll',
-               'Russian Blue', 'Siamese', 'Sphynx']
+# Create a Streamlit app
+st.title("Image Classification App")
 
-st.title("Cat Breed Classifier")
-st.write("Upload an image of a cat to classify its breed:")
+# Create a file uploader
+uploaded_file = st.file_uploader("Select an image", type=["jpg", "jpeg", "png"])
 
-uploaded_file = st.file_uploader("Choose an image file", type=["jpg", "png"])
-
-if uploaded_file is not None:
-    # Read the uploaded file
-    image = Image.open(io.BytesIO(uploaded_file.getvalue()))
-
-    # Display the uploaded image
-    st.image(image, caption="Uploaded Image", use_column_width=True)
-
-    # Preprocess the uploaded image
-    image = tf.image.resize(np.array(image), (224, 224))
-    image = image / 255.0
+# Create a button to classify the image
+if st.button("Classify"):
+    # Load the uploaded image
+    image = Image.open(uploaded_file)
+    image = image.resize((224, 224))
+    image = np.array(image) / 255.0
 
     # Make predictions
-    predictions = model.predict(image[None, ...])
+    predictions = model.predict(image[np.newaxis,...])
 
-    # Get the top-1 prediction
-    top_prediction = np.argmax(predictions)
+    # Get the class label with the highest probability
+    class_label = np.argmax(predictions)
 
     # Display the result
-    st.write(f"Predicted breed: {class_names[top_prediction]}")
+    st.write(f"Class label: {class_label}")
+    st.write(f"Confidence: {predictions[0, class_label]:.2f}")
