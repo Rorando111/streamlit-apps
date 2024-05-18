@@ -13,6 +13,9 @@ st.write("""
 
 file = st.file_uploader("Upload an image of a cat to classify its breed:", type=["jpg", "jpeg", "png"])
 
+import cv2
+from PIL import Image,ImageOps
+import numpy as np
 if file is not None:
     image = Image.open(file)
     st.image(image, use_column_width=True)
