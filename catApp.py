@@ -18,7 +18,7 @@ def processed_img(img_path):
     answer = model.predict(img)
     y_class = answer.argmax(axis=-1)
     y = y_class[0]
-    res = lab[y]
+    res = lab.get(y, "Unknown Breed")
     return res
 
 def run():
@@ -37,5 +37,9 @@ def run():
 
         if st.button("Predict"):
             result = processed_img(save_image_path)
-            st.success("Predicted Cat breed is: " + result)
+            if result == "Unknown Breed":
+                st.error("Predicted Cat breed is: " + result)
+            else:
+                st.success("Predicted Cat breed is: " + result)
+
 run()
