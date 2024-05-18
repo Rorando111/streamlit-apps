@@ -5,7 +5,7 @@ from PIL import Image
 import io
 
 # Load the model
-model = tf.keras.models.load_model('cats_model.hdf5')
+model = tf.keras.models.load_model('cat_classifier.hdf5')
 
 # Define the class names
 class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
