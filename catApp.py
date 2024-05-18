@@ -9,13 +9,13 @@ model=load_model()
 st.write("""
 # Cat Breed Classifier"""
 )
-file=st.file_uploader("Upload an image of a cat to classify its breed:",type=["jpg","png"])
+file=st.file_uploader("Upload an image of a cat to classify its breed:",type=["jpg","jpeg", "png"])
 
 import cv2
 from PIL import Image,ImageOps
 import numpy as np
 def import_and_predict(image_data,model):
-    size=(64,64)
+    size=(224,224)
     image=ImageOps.fit(image_data,size,Image.LANCZOS)
     img=np.asarray(image)
     img_reshape=img[np.newaxis,...]
