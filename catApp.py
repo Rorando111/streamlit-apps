@@ -3,41 +3,34 @@ import tensorflow as tf
 
 @st.cache(allow_output_mutation=True)
 def load_model():
-  model = tf.keras.models.load_model('cat_breed_classifier.h5')
+  model = tf.keras.models.load_model('cat_classifier.h5')
   return model
-
-model = load_model()
+model=load_model()
 st.write("""
 # Cat Breed Classifier"""
 )
-
-file = st.file_uploader("Upload an image of a cat to classify its breed:", type=["jpg", "jpeg", "png"])
+file=st.file_uploader("Upload an image of a cat to classify its breed:",type=["jpg","png"])
 
 import cv2
 from PIL import Image,ImageOps
 import numpy as np
-if file is not None:
-    image = Image.open(file)
-    st.image(image, use_column_width=True)
-
-    # Preprocess the image
-    img_reshape = import_and_predict(image, model)
-
-    # Get the class label with the highest probability
-    class_label = np.argmax(img_reshape)
-
-    # Display the result
-    st.write(f"Class label: {class_label}")
-    st.write(f"Confidence: {img_reshape[0, class_label]:.2f}")
-
-def import_and_predict(image_data, model):
-    size = (224, 224)
-    image = ImageOps.fit(image_data, size, Image.LANCZOS)
-    img = np.asarray(image)
-    img = img / 255.0  # Normalize pixel values
-    img_reshape = np.expand_dims(img, axis=0)
-    prediction = model.predict(img_reshape)
+def import_and_predict(image_data,model):
+    size=(224,224)
+    image=ImageOps.fit(image_data,size,Image.LANCZOS)
+    img=np.asarray(image)
+    img_reshape=img[np.newaxis,...]
+    prediction=model.predict(img_reshape)
     return prediction
+if file is None:
+    st.text("Please upload an image file")
+else:
+    image=Image.open(file)
+    st.image(image,use_column_width=True)
+    prediction=import_and_predict(image,model)
+    class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
+               'British Shorthair', 'Egyptian Mau', 'Maine Coon',
+               'Norweigian forest', 'Persian', 'Ragdoll',
+               'Russian Blue', 'Siamese', 'Sphynx']
 
-# Save the model using the `save_model` function
-tf.keras.models.save_model(model, 'cat_classifier.h5')
+    string="OUTPUT : "+class_names[np.argmax(prediction)]
+    st.success(string)
