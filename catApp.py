@@ -26,11 +26,10 @@ if file is None:
 else:
     image=Image.open(file)
     st.image(image,use_column_width=True)
-    prediction=import_and_predict(image,model)
-    class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
-               'British Shorthair', 'Egyptian Mau', 'Maine Coon',
-               'Norweigian forest', 'Persian', 'Ragdoll',
-               'Russian Blue', 'Siamese', 'Sphynx']
+    predictions = model.predict(img_reshape)
 
-    string="OUTPUT : "+class_names[np.argmax(prediction)]
-    st.success(string)
+    # Get the class label with the highest probability
+    class_label = np.argmax(predictions)
+    # Display the result
+    st.write(f"Class label: {class_label}")
+    st.write(f"Confidence: {predictions[0, class_label]:.2f}")
