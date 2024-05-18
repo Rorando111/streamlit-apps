@@ -5,7 +5,7 @@ import numpy as np
 from keras.models import load_model
 import os
 
-model = load_model('cat_classifier.h5', compile=False)
+model = load_model('cat_classifier.hdf5', compile=False)
 lab = {0: 'Abyssinian', 1: 'Bengal', 2: 'Birman', 3: 'Bombay', 4: 'British Shorthair', 
        5: 'Egyptian Mau', 6: 'Maine Coon', 7: 'Norwegian Forest', 8: 'Persian', 9: 'Ragdoll', 
        10: 'Russian Blue', 11: 'Siamese', 12: 'Sphynx'}
@@ -23,10 +23,8 @@ def processed_img(img_path):
 
 def run():
     st.title("Cat Breed Classification")
-    st.markdown('''<h4 style='text-align: left; color: #d73b5c;'>* Data is based "270 Bird Species also see 70 Sports Dataset"</h4>''',
-                unsafe_allow_html=True)
 
-    img_file = st.file_uploader("Choose an Image of Cat", type=["jpg", "png"])
+    img_file = st.file_uploader("Choose an Image of Cat", type=["jpg", "png","jpeg"])
     if img_file is not None:
         img1 = Image.open(img_file)
         st.image(img1, use_column_width=False)
