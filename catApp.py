@@ -1,29 +1,36 @@
 import streamlit as st
 import tensorflow as tf
-from PIL import Image
 
-# Load the model
-model = tf.keras.models.load_model('cat_classifier.hdf5')
+@st.cache(allow_output_mutation=True)
+def load_model():
+  model = tf.keras.models.load_model('cat_classifier.hdf5')
+  return model
+model=load_model()
+st.write("""
+# Cat Breed Classifier"""
+)
+file=st.file_uploader("Upload an image of a cat to classify its breed:",type=["jpg","png"])
 
-# Create a Streamlit app
-st.title("Image Classification App")
+import cv2
+from PIL import Image,ImageOps
+import numpy as np
+def import_and_predict(image_data,model):
+    size=(64,64)
+    image=ImageOps.fit(image_data,size,Image.LANCZOS)
+    img=np.asarray(image)
+    img_reshape=img[np.newaxis,...]
+    prediction=model.predict(img_reshape)
+    return prediction
+if file is None:
+    st.text("Please upload an image file")
+else:
+    image=Image.open(file)
+    st.image(image,use_column_width=True)
+    prediction=import_and_predict(image,model)
+    class_names = ['Abyssinian', 'Bengal', 'Birman', 'Bombay',
+               'British Shorthair', 'Egyptian Mau', 'Maine Coon',
+               'Norweigian forest', 'Persian', 'Ragdoll',
+               'Russian Blue', 'Siamese', 'Sphynx']
 
-# Create a file uploader
-uploaded_file = st.file_uploader("Select an image", type=["jpg", "jpeg", "png"])
-
-# Create a button to classify the image
-if st.button("Classify"):
-    # Load the uploaded image
-    image = Image.open(uploaded_file)
-    image = image.resize((224, 224))
-    image = np.array(image) / 255.0
-
-    # Make predictions
-    predictions = model.predict(image[np.newaxis,...])
-
-    # Get the class label with the highest probability
-    class_label = np.argmax(predictions)
-
-    # Display the result
-    st.write(f"Class label: {class_label}")
-    st.write(f"Confidence: {predictions[0, class_label]:.2f}")
+    string="OUTPUT : "+class_names[np.argmax(prediction)]
+    st.success(string)
