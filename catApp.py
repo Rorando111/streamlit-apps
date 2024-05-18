@@ -3,6 +3,7 @@ from PIL import Image
 from keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 from keras.models import load_model
+import os
 
 model = load_model('cat_classifier.h5', compile=False)
 lab = {0: 'Abyssinian', 1: 'Bengal', 2: 'Birman', 3: 'Bombay', 4: 'British Shorthair', 
@@ -29,12 +30,14 @@ def run():
     if img_file is not None:
         img1 = Image.open(img_file)
         st.image(img1, use_column_width=False)
-        save_image_path = './upload_images/' + img_file.name
+        upload_dir = './upload_images/'
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+        save_image_path = os.path.join(upload_dir, img_file.name)
         with open(save_image_path, "wb") as f:
             f.write(img_file.getbuffer())
 
         if st.button("Predict"):
             result = processed_img(save_image_path)
             st.success("Predicted Cat breed is: " + result)
-
 run()
